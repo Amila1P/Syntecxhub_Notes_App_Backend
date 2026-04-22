@@ -24,7 +24,27 @@ exports.getNotes = async (req, res) => {
     }
 };
 
-// 3. Archive Note (Soft-delete)
+// 3. Update Note
+exports.updateNote = async (req, res) => {
+    try {
+        const { title, content } = req.body;
+        let note = await Note.findById(req.params.id);
+        if (!note) return res.status(404).json({ msg: 'Note not found' });
+
+        if (note.user.toString() !== req.user) {
+            return res.status(401).json({ msg: 'Not authorized' });
+        }
+
+        if (title) note.title = title;
+        if (content) note.content = content;
+        await note.save();
+        res.json(note);
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+};
+
+// 4. Archive Note (Soft-delete)
 exports.archiveNote = async (req, res) => {
     try {
         let note = await Note.findById(req.params.id);
