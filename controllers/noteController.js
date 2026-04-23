@@ -48,16 +48,43 @@ exports.updateNote = async (req, res) => {
 exports.archiveNote = async (req, res) => {
     try {
         let note = await Note.findById(req.params.id);
-        if (!note) return res.status(404).json({ msg: 'Note not found' });
 
-        if (note.user.toString() !== req.user) { 
-            return res.status(401).json({ msg: 'Not authorized' });
+        if (!note) {
+            return res.status(404).json({ msg: 'Note not found' });
         }
 
-        note.isArchived = true; // Soft-delete logic
+        if (note.user.toString() !== req.user) {
+            return res.status(401).json({ msg: 'User not authorized' });
+        }
+
+        // 3. Archive the note (soft-delete)
+        note.isArchived = true;
         await note.save();
-        res.json({ msg: 'Note archived successfully' });
+
+        res.json({ msg: 'Note archived successfully', note });
     } catch (err) {
+        console.error("Archive Error:", err.message); 
+        res.status(500).send('Server Error: ' + err.message);
+    }
+};
+
+// Unarchive a note
+exports.unarchiveNote = async (req, res) => {
+    try {
+        let note = await Note.findById(req.params.id);
+
+        if (!note) return res.status(404).json({ msg: 'Note not found' });
+
+        if (note.user.toString() !== req.user) {
+            return res.status(401).json({ msg: 'User not authorized' });
+        }
+
+        note.isArchived = false;
+        await note.save();
+
+        res.json({ msg: 'Note unarchived successfully', note });
+    } catch (err) {
+        console.error(err.message);
         res.status(500).send('Server Error');
     }
 };
