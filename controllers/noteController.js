@@ -1,4 +1,4 @@
-const Note = require('../models/Note');
+const Note = require('../models/note');
 
 // 1. Create Note
 exports.createNote = async (req, res) => {
@@ -83,6 +83,28 @@ exports.unarchiveNote = async (req, res) => {
         await note.save();
 
         res.json({ msg: 'Note unarchived successfully', note });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+// Permanent Delete a note
+exports.deleteNote = async (req, res) => {
+    try {
+        const note = await Note.findById(req.params.id);
+
+        if (!note) {
+            return res.status(404).json({ msg: 'Note not found' });
+        }
+
+        if (note.user.toString() !== req.user) {
+            return res.status(401).json({ msg: 'User not authorized' });
+        }
+
+        await Note.findByIdAndDelete(req.params.id);
+
+        res.json({ msg: 'Note deleted permanently' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
