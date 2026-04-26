@@ -10,23 +10,25 @@ function App() {
   const isAuthenticated = localStorage.getItem('token');
 
   return (
-    <Router>
-      <Routes>
-        {/* Dashboard Route */}
-        <Route 
-          path="/" 
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
-        />
+    <div className="App">
+      <Router>
+        <Routes>
+          {/* Dashboard Route */}
+          <Route 
+            path="/" 
+            element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
+          />
 
-        {/* Login Route */}
-        <Route path="/login" element={<LoginPage />} />
+          {/* Login Route */}
+          <Route path="/login" element={<LoginPage />} />
 
-        {/* Register Route */}
-        <Route path="/register" element={<RegisterPage />} />
+          {/* Register Route */}
+          <Route path="/register" element={<RegisterPage />} />
 
-        <Route path="/profile" element={<ProfilePage />} />
-      </Routes>
-    </Router>
+          <Route path="/profile" element={<ProfilePage />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
